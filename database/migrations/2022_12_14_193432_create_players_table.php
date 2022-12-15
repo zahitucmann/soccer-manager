@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('first_name');
             $table->string('last_name');
             $table->string('country');
+            $table->string('player_type');
             $table->integer('market_value');
             $table->tinyInteger('age');
             $table->unsignedBigInteger('team_id');

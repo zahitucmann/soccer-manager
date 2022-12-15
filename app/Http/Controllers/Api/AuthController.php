@@ -2,100 +2,47 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
-
-class AuthController extends Controller
+use App\Services\AuthService;
+use App\Http\Requests\UserRegisterRequest;
+use App\Http\Requests\UserLogInRequest;
+class AuthController extends BaseController
 {
-    /**
-     * Create User
-     * @param Request $request
-     * @return User
-     */
-    public function createUser(Request $request)
+    private $authService;
+
+    public function __construct()
     {
-        try {
-            $validateUser = Validator::make($request->all(),
-            [
-                'name' => 'required',
-                'last_name' => 'required',
-                'email' => 'required|email|unique:users,email',
-                'password' => 'required'
-            ]);
-
-            if ($validateUser->fails()) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'validation error',
-                    'error' => $validateUser->errors()
-                ], 401);
-            }
-
-            $user = User::create([
-                'name' => $request->name,
-                'last_name' => $request->last_name,
-                'email' => $request->email,
-                'password' => Hash::make($request->password)
-            ]);
-
-            return response()->json([
-                'status' => true,
-                'message' => 'User Created Successfully',
-                'token' => $user->createToken("API TOKEN")->plainTextToken
-            ], 200);
-        } catch(\Throwable $th) {
-            return response()->json([
-                'status' => false,
-                'message' => $th->getMessage()
-            ], 500); 
+        $this->authService = new AuthService();
+    }
+   
+    public function register(UserRegisterRequest $request)
+    {
+        dd('asdasd');
+        $result = $this->authService->userRegistration($request);
+        
+        if ($result) {
+            return $this->successResponse($result, 'User created successfully');
         }
+
+        return $this->errorResponse('Error', 500);
     }
 
-    /**
-     * Login User
-     * @param Request $request
-     * @return User
-     */
-    public function loginUser(Request $request)
+    public function login(UserLogInRequest $request)
     {
-        try {
-            $validateUser = Validator::make($request->all(),
-            [
-                'email' => 'required|email',
-                'password' => 'required'
-            ]);
-
-            if ($validateUser->fails()) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'validation error',
-                    'error' => $validateUser->errors()
-                ], 401);
-            }
-
-            if (!Auth::attempt($request->only(['email', 'password']))) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Email & Password does not match with our record.',
-                ], 401);
-            }
-
-            $user = User::where('email', $request->email)->first();
-
-            return response()->json([
-                'status' => true,
-                'message' => 'User Logged In Successfully',
-                'token' => $user->createToken("API TOKEN")->plainTextToken
-            ], 200);
-        } catch(\Throwable $th) {
-            return response()->json([
-                'status' => false,
-                'message' => $th->getMessage()
-            ], 500); 
+        if (!Auth::attempt($request->only(['email', 'password']))) {
+            return $this->errorResponse('Email & Password does not match with our record.', 401);
         }
+
+        $result = $this->authService->userLogIn($request);
+        
+        if ($result) {
+            return $this->successResponse($result, 'User Logged In Successfully');
+        }
+
+        return $this->errorResponse('Error', 500);
     }
 }

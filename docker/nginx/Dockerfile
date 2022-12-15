@@ -13,3 +13,5 @@ RUN mkdir -p /etc/nginx/certs
 
 # put nginx config
 COPY ./nginx/nginx.conf /etc/nginx/conf.d/default.conf
+
+WORKDIR /var/www/html
