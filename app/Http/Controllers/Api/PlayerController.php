@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
 use App\Models\Player;
+use App\Models\Team;
 use Illuminate\Http\Request;
 
-class PlayerController extends Controller
+class PlayerController extends BaseController
 {
     /**
      * Display a listing of the resource.
@@ -15,72 +15,45 @@ class PlayerController extends Controller
      */
     public function index()
     {
-        //
-    }
+        $players = Player::all();
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
+        return $this->successResponse($players);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Player  $player
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Player $player)
+    public function show($id)
     {
-        //
-    }
+        $player = Player::find($id);
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Player  $player
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Player $player)
-    {
-        //
+        return $this->successResponse($player);
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Player  $player
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Player $player)
+    public function update(Request $request, $id)
     {
-        //
-    }
+        $player = Player::findOrFail($id);
+        
+        if (Team::where('user_id', auth('sanctum')->user()->id)->first()->id != $player->team_id) {
+            return $this->errorResponse('Permission Denied! You are not owner of this player\'s team.', 401);
+        }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Player  $player
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Player $player)
-    {
-        //
+        $player->first_name = $request->first_name ? $request->first_name : $player->first_name;
+        $player->last_name = $request->last_name ? $request->last_name : $player->last_name;
+        $player->country = $request->country ? $request->country : $player->country;
+
+        $player->save();
+
+        return $this->successResponse($player);
     }
 }

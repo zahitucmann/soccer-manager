@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
 use App\Models\Team;
 use Illuminate\Http\Request;
 
-class TeamController extends Controller
+class TeamController extends BaseController
 {
     /**
      * Display a listing of the resource.
@@ -15,72 +14,40 @@ class TeamController extends Controller
      */
     public function index()
     {
-        //
-    }
+        $teams = Team::all();
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
+        return $this->successResponse($teams);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Team  $team
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Team $team)
+    public function show($id)
     {
-        //
+        $team = Team::find($id);
+
+        return $this->successResponse($team);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Team  $team
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Team $team)
-    {
-        //
-    }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Team  $team
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Team $team)
+    public function update(Request $request, $id)
     {
-        //
-    }
+        $team = Team::findOrFail($id);
+        $team->name = $request->name ? $request->name : $team->name;
+        $team->country = $request->country ? $request->country : $team->country;
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Team  $team
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Team $team)
-    {
-        //
+        $team->save();
+
+        return $this->successResponse($team);
     }
 }

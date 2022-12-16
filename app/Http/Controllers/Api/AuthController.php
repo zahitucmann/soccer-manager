@@ -2,10 +2,6 @@
 
 namespace App\Http\Controllers\Api;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
-use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use App\Services\AuthService;
 use App\Http\Requests\UserRegisterRequest;
@@ -21,7 +17,6 @@ class AuthController extends BaseController
    
     public function register(UserRegisterRequest $request)
     {
-        dd('asdasd');
         $result = $this->authService->userRegistration($request);
         
         if ($result) {
