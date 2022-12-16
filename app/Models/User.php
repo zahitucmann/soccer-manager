@@ -48,4 +48,9 @@ class User extends Authenticatable
     {
         return $this->hasOne(Team::class);
     }
+
+    public function fullName()
+    {
+        return $this->name.' '.$this->last_name;
+    }
 }

@@ -22,4 +22,16 @@ class Team extends Model
     {
         return $this->hasMany(Player::class);
     }
+
+    public function setTeamValue()
+    {
+        $teamValue = 0;
+        $players = $this->players;
+
+        foreach ($players as $player) {
+            $teamValue += $player->market_value;
+        }
+        
+        $this->team_value = $teamValue;
+    }
 }

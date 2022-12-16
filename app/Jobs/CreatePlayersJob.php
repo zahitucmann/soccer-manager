@@ -35,19 +35,17 @@ class CreatePlayersJob implements ShouldQueue
      */
     public function handle()
     {
-        $teamValue = 0;
-
-        $teamValue = $this->playerGenerator('goalkeeper', 3, $this->team_id, $teamValue);
-        $teamValue = $this->playerGenerator('defender', 6, $this->team_id, $teamValue);
-        $teamValue = $this->playerGenerator('midfielder', 6, $this->team_id, $teamValue);
-        $teamValue = $this->playerGenerator('attacker', 5, $this->team_id, $teamValue);
+        $this->playerGenerator('goalkeeper', 3, $this->team_id);
+        $this->playerGenerator('defender', 6, $this->team_id);
+        $this->playerGenerator('midfielder', 6, $this->team_id);
+        $this->playerGenerator('attacker', 5, $this->team_id);
 
         $team = Team::find($this->team_id);
-        $team->team_value = $teamValue;
+        $team->setTeamValue();
         $team->save();
     }
 
-    private function playerGenerator($playerType, $count, $teamId, $teamValue) {
+    private function playerGenerator($playerType, $count, $teamId) {
         $faker = Container::getInstance()->make(Generator::class);
 
         for ($i = 0; $i < $count; $i++) {
@@ -63,9 +61,6 @@ class CreatePlayersJob implements ShouldQueue
             $player->team_id = $teamId;
 
             $player->save();
-            $teamValue += $player->market_value;
         }
-
-        return $teamValue;
     }
 }
