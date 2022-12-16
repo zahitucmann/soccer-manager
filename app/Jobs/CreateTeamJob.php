@@ -37,14 +37,14 @@ class CreateTeamJob implements ShouldQueue
     {
         $faker = Container::getInstance()->make(Generator::class);
 
-        $tean = Team::create([
+        $team = new Team([
             'name' => $faker->lexify(),
-            'country' => $faker->country(),
-            'user_id' => $this->user_id,
-            'team_value' => 0,
+            'country' => $faker->country()
         ]);
 
-        
-        CreatePlayersJob::dispatch($tean->id)->onQueue('createPlayer');
+        $team->user_id = $this->user_id;
+        $team->save();
+
+        CreatePlayersJob::dispatchSync($team->id);
     }
 }

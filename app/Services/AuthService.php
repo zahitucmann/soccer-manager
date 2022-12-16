@@ -17,7 +17,7 @@ class AuthService
             'password' => Hash::make($request->password)
         ]);
 
-        CreateTeamJob::dispatch($user->id)->onQueue('createTeam');
+        CreateTeamJob::dispatchSync($user->id);
 
         return [    
             'status' => true,
