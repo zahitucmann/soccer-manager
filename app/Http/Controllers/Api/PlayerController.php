@@ -15,7 +15,8 @@ class PlayerController extends BaseController
      */
     public function index()
     {
-        $players = Player::all();
+        $currentUserTeamId = Team::where('user_id', auth('sanctum')->user()->id)->first()->id;
+        $players = Player::where('team_id', $currentUserTeamId)->get();
 
         return $this->successResponse($players);
     }
@@ -28,6 +29,12 @@ class PlayerController extends BaseController
      */
     public function show($id)
     {
+        $currentUserTeamId = Team::where('user_id', auth('sanctum')->user()->id)->first()->id;
+        
+        if ($id != $currentUserTeamId) {
+            return $this->errorResponse('Permission Denied! You are not owner of this player\'s team.', 401);
+        }
+
         $player = Player::find($id);
 
         return $this->successResponse($player);
@@ -43,16 +50,12 @@ class PlayerController extends BaseController
     public function update(Request $request, $id)
     {
         $player = Player::findOrFail($id);
-        
+
         if (Team::where('user_id', auth('sanctum')->user()->id)->first()->id != $player->team_id) {
             return $this->errorResponse('Permission Denied! You are not owner of this player\'s team.', 401);
         }
 
-        $player->first_name = $request->first_name ? $request->first_name : $player->first_name;
-        $player->last_name = $request->last_name ? $request->last_name : $player->last_name;
-        $player->country = $request->country ? $request->country : $player->country;
-
-        $player->save();
+        $player->update($request->post());
 
         return $this->successResponse($player);
     }

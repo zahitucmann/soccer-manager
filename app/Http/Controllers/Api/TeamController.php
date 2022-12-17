@@ -8,18 +8,6 @@ use Illuminate\Http\Request;
 class TeamController extends BaseController
 {
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        $teams = Team::all();
-
-        return $this->successResponse($teams);
-    }
-
-    /**
      * Display the specified resource.
      *
      * @param  int  $id
@@ -27,6 +15,12 @@ class TeamController extends BaseController
      */
     public function show($id)
     {
+        $currentUserTeamId = Team::where('user_id', auth('sanctum')->user()->id)->first()->id;
+
+        if ($id != $currentUserTeamId) {
+            return $this->errorResponse('Permission Denied! You are not owner of this player\'s team.', 401);
+        }
+        
         $team = Team::find($id);
 
         return $this->successResponse($team);
@@ -42,11 +36,14 @@ class TeamController extends BaseController
      */
     public function update(Request $request, $id)
     {
+        $currentUserTeamId = Team::where('user_id', auth('sanctum')->user()->id)->first()->id;
         $team = Team::findOrFail($id);
-        $team->name = $request->name ? $request->name : $team->name;
-        $team->country = $request->country ? $request->country : $team->country;
 
-        $team->save();
+        if ($team->id != $currentUserTeamId) {
+            return $this->errorResponse('Permission Denied! You are not owner of this player\'s team.', 401);
+        }
+
+        $team->update($request->post());
 
         return $this->successResponse($team);
     }
