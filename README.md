@@ -5,4 +5,7 @@
     * docker-compose up -d
     * docker exec soccer_manager_backend php artisan migrate (for the first time)
     * docker-compose down (to stop project)
-- phpMyAdmin link: http://localhost:8081/
+- You can check database from phpMyAdmin
+    * link: http://localhost:8081/
+    * username: soccerUser
+    * password: soccerPassword
