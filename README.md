@@ -5,4 +5,4 @@
     * docker-compose up -d
     * docker exec soccer_manager_backend php artisan migrate (for the first time)
     * docker-compose down (to stop project)
-- phpMyAdmin link: 
+- phpMyAdmin link: http://localhost:8081/
