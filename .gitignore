@@ -5,6 +5,7 @@
 /storage/*.key
 /storage/framework
 /storage/mysql-data
+/storage/logs
 /vendor
 .env.backup
 .env.production
